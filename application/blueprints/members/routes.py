@@ -4,10 +4,41 @@ from marshmallow import ValidationError
 from sqlalchemy import select
 from application.models import Member, db
 from . import members_bp
+from application.extensions import limiter, cache
+from application.utils.util import encode_token, token_required
+
+
+
+@members_bp.route("/login", methods=['POST'])
+def login():
+    try:
+        credentials = request.json
+        email = credentials['email']
+        password = credentials['password']
+    except KeyError:
+        return jsonify({'messages': "Invalid payload expecting username and password."}), 400
+    
+    query = select(Member).where(Member.email == email)
+    member = db.session.execute(query).scalars().first()
+
+    if member and member.password == password: #if we have a user associated with the username, validate the password
+        auth_token = encode_token(member.id, member.role.role_name)
+
+        response = {
+            "status": "success",
+            "message": "Successfully Logged In",
+            "auth_token": auth_token
+        }
+        return jsonify(response), 200
+    else:
+        return jsonify({'messages': "Invalid email or password"}), 401
+
 
 
 
 @members_bp.route("/members", methods=['POST'])
+@limiter.limit("3 per hour")
+@cache.cached(timeout=60)
 def create_member():
     try:
         member_data = member_schema.load(request.json)
@@ -66,9 +97,11 @@ def update_member(member_id):
 
 
 #DELETE SPECIFIC MEMBER
-@members_bp.route("/members/<int:member_id>", methods=['DELETE'])
+@members_bp.route("/", methods=['DELETE'])
+@token_required
 def delete_member(member_id):
-    member = db.session.get(Member, member_id)
+    query = select(Member).where(Member.id == member_id)
+    member = db.session.execute(query).scalars().first()
 
     if not member:
         return jsonify({"error": "Member not found."}), 404
