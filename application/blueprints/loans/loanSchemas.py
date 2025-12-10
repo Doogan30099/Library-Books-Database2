@@ -1,0 +1,24 @@
+from application.models import Loan
+from application.extensions import ma
+from marshmallow import fields
+
+
+
+
+class LoanSchema(ma.SQLAlchemyAutoSchema):
+    books = fields.Nested("BookSchema", many=True)
+    member = fields.Nested("MemberSchema")
+    class Meta:
+        model = Loan
+        fields = ("id", "loan_date", "member_id", "books", "member")   
+
+class Update_LoanSchema(ma.Schema):
+    add_book_ids = fields.List(fields.Int(), required=True)
+    remove_book_ids = fields.List(fields.Int(), required=True)
+    class Meta:
+        fields = ("add_book_ids", "remove_book_ids")
+
+loan_schema = LoanSchema()
+loans_schema = LoanSchema(many=True)
+return_loan_schema = LoanSchema(exclude=["member_id"])
+update_loan_schema = Update_LoanSchema()

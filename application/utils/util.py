@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta, timezone
 from jose import jwt
-from functools import wraps, jwt
+from functools import wraps
 import jose.exceptions
 from flask import request, jsonify
 

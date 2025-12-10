@@ -39,7 +39,7 @@ class Member(Base):
     DOB: Mapped[date] = mapped_column(Date, nullable=False)
     password: Mapped[str] = mapped_column(String(255), nullable=False)
 
-    loans: Mapped[List['Loan']] = db.relationship(back_populates='member') #New relationship attribute
+    loans: Mapped[List['Loan']] = db.relationship(back_populates='member', cascade="all, delete-orphan") #New relationship attribute
 
 
 class Loan(Base):
