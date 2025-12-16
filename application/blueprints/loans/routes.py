@@ -2,7 +2,7 @@ from application.models import db, Book, Loan
 from sqlalchemy import select, delete
 from marshmallow import ValidationError
 from application.blueprints.loans import loans_bp
-from .loanSchemas import loan_schema, loans_schema, return_loan_schema, update_loan_schema
+from .loanSchemas import loan_schema, loans_schema, update_loan_schema
 from flask import request, jsonify
 
 

@@ -2,6 +2,10 @@ from flask import Flask
 from .extensions import ma, limiter, cache
 from .models import db
 from .blueprints.members import members_bp
+from .blueprints.Items import items_bp
+from .blueprints.books import books_bp
+from . blueprints.loans import loans_bp
+from . blueprints.orders import orders_bp
 
 
 def create_app(config_name):
@@ -18,5 +22,8 @@ def create_app(config_name):
 
     #register blueprints
     app.register_blueprint(members_bp, url_prefix='/members')
-
+    app.register_blueprint(items_bp, url_prefix='/items')
+    app.register_blueprint(books_bp, url_prefix='/books')
+    app.register_blueprint(loans_bp, url_prefix='/loans')
+    app.register_blueprint(orders_bp, url_prefix='/orders')
     return app

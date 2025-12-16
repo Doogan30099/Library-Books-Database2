@@ -10,7 +10,7 @@ class LoanSchema(ma.SQLAlchemyAutoSchema):
     member = fields.Nested("MemberSchema")
     class Meta:
         model = Loan
-        fields = ("id", "loan_date", "member_id", "books", "member")   
+        include_fk = True  # This will include member_id foreign key   
 
 class Update_LoanSchema(ma.Schema):
     add_book_ids = fields.List(fields.Int(), required=True)
@@ -20,5 +20,4 @@ class Update_LoanSchema(ma.Schema):
 
 loan_schema = LoanSchema()
 loans_schema = LoanSchema(many=True)
-return_loan_schema = LoanSchema(exclude=["member_id"])
 update_loan_schema = Update_LoanSchema()
